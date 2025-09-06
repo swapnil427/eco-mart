@@ -1,6 +1,11 @@
 // ===== AUTHENTICATION LOGIC =====
 
+// Global flag to prevent unwanted redirects
+let isLoginPageInitialized = false;
+
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing authentication...');
+    
     // Get DOM elements
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
@@ -9,41 +14,86 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginFormElement = document.getElementById('loginFormElement');
     const signupFormElement = document.getElementById('signupFormElement');
 
-    // Form switching
-    if (showSignupLink) {
-        showSignupLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            showSignupForm();
-        });
-    }
+    // Check if we're on the login page
+    const currentPath = window.location.pathname;
+    const isLoginPage = currentPath.endsWith('index.html') || 
+                       currentPath === '/' || 
+                       currentPath.endsWith('/') ||
+                       loginForm !== null; // If login form exists, we're on login page
+    
+    console.log('Current path:', currentPath);
+    console.log('Is login page:', isLoginPage);
+    console.log('Login form exists:', loginForm !== null);
+    
+    if (isLoginPage) {
+        // We're on the login page - set up login functionality
+        console.log('Setting up login page...');
+        isLoginPageInitialized = true;
+        
+        // Clear any existing auth data to ensure clean state
+        removeCurrentUser();
+        
+        // Form switching
+        if (showSignupLink) {
+            showSignupLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Switching to signup form');
+                showSignupForm();
+            });
+        }
 
-    if (showLoginLink) {
-        showLoginLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            showLoginForm();
-        });
-    }
+        if (showLoginLink) {
+            showLoginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Switching to login form');
+                showLoginForm();
+            });
+        }
 
-    // Form submissions
-    if (loginFormElement) {
-        loginFormElement.addEventListener('submit', handleLogin);
-    }
+        // Form submissions
+        if (loginFormElement) {
+            loginFormElement.addEventListener('submit', handleLogin);
+            console.log('Login form handler attached');
+        }
 
-    if (signupFormElement) {
-        signupFormElement.addEventListener('submit', handleSignup);
-    }
+        if (signupFormElement) {
+            signupFormElement.addEventListener('submit', handleSignup);
+            console.log('Signup form handler attached');
+        }
 
-    // Check if user is already authenticated
+        // Initialize password strength checker
+        initPasswordStrength();
+        
+        // IMPORTANT: Do NOT set up any auth state listeners on login page
+        console.log('Login page setup complete - no auth listeners attached');
+        
+    } else {
+        // We're on a protected page - set up auth protection
+        console.log('Setting up protected page auth check...');
+        setupProtectedPageAuth();
+    }
+});
+
+/**
+ * Setup authentication protection for non-login pages
+ */
+function setupProtectedPageAuth() {
     auth.onAuthStateChanged((user) => {
-        if (user && window.location.pathname.endsWith('index.html')) {
-            // User is logged in, redirect to landing page
-            window.location.href = 'landing.html';
+        if (!user) {
+            console.log('User not authenticated on protected page, redirecting to login');
+            window.location.href = 'index.html';
+        } else {
+            console.log('User authenticated on protected page:', user.email);
+            // Save user data for the session
+            saveCurrentUser({
+                uid: user.uid,
+                email: user.email,
+                username: user.displayName || 'User',
+                displayName: user.displayName || 'User'
+            });
         }
     });
-
-    // Initialize password strength checker
-    initPasswordStrength();
-});
+}
 
 /**
  * Show signup form
@@ -55,6 +105,7 @@ function showSignupForm() {
     if (loginForm && signupForm) {
         loginForm.classList.add('hidden');
         signupForm.classList.remove('hidden');
+        console.log('Signup form shown');
     }
 }
 
@@ -68,6 +119,7 @@ function showLoginForm() {
     if (loginForm && signupForm) {
         signupForm.classList.add('hidden');
         loginForm.classList.remove('hidden');
+        console.log('Login form shown');
     }
 }
 
@@ -77,6 +129,7 @@ function showLoginForm() {
  */
 async function handleLogin(e) {
     e.preventDefault();
+    console.log('Login form submitted');
     
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -94,42 +147,49 @@ async function handleLogin(e) {
 
     try {
         showLoading();
+        console.log('Attempting to sign in user:', email);
         
         // Sign in with Firebase Auth
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // Get additional user data from Firestore
-        const userDoc = await db.collection(COLLECTIONS.USERS).doc(user.uid).get();
-        
-        if (userDoc.exists) {
-            const userData = userDoc.data();
-            const completeUserData = {
-                uid: user.uid,
-                email: user.email,
-                username: userData.username || 'User',
-                displayName: user.displayName || userData.username || 'User',
-                createdAt: userData.createdAt
-            };
+        console.log('Login successful for user:', user.email);
+
+        // Prepare user data
+        let completeUserData = {
+            uid: user.uid,
+            email: user.email,
+            username: user.displayName || 'User',
+            displayName: user.displayName || 'User',
+            createdAt: new Date()
+        };
+
+        // Try to get additional user data from Firestore
+        try {
+            const userDoc = await db.collection(COLLECTIONS.USERS).doc(user.uid).get();
             
-            saveCurrentUser(completeUserData);
-        } else {
-            // If no Firestore document exists, use Firebase Auth data
-            const completeUserData = {
-                uid: user.uid,
-                email: user.email,
-                username: user.displayName || 'User',
-                displayName: user.displayName || 'User',
-                createdAt: new Date()
-            };
-            
-            saveCurrentUser(completeUserData);
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                completeUserData.username = userData.username || completeUserData.username;
+                completeUserData.displayName = userData.username || completeUserData.displayName;
+                if (userData.createdAt) {
+                    completeUserData.createdAt = userData.createdAt.toDate();
+                }
+                console.log('User data retrieved from Firestore');
+            }
+        } catch (firestoreError) {
+            console.warn('Could not fetch user data from Firestore:', firestoreError);
+            // Continue with Firebase Auth data
         }
+
+        // Save user data
+        saveCurrentUser(completeUserData);
 
         showMessage('Login successful! Redirecting...', 'success');
         
-        // Redirect to landing page
+        // Redirect to landing page after a short delay
         setTimeout(() => {
+            console.log('Redirecting to landing page...');
             window.location.href = 'landing.html';
         }, 1500);
 
@@ -143,6 +203,7 @@ async function handleLogin(e) {
                 errorMessage = 'No account found with this email address.';
                 break;
             case 'auth/wrong-password':
+            case 'auth/invalid-credential':
                 errorMessage = 'Incorrect password. Please try again.';
                 break;
             case 'auth/invalid-email':
@@ -150,6 +211,9 @@ async function handleLogin(e) {
                 break;
             case 'auth/too-many-requests':
                 errorMessage = 'Too many failed attempts. Please try again later.';
+                break;
+            case 'auth/network-request-failed':
+                errorMessage = 'Network error. Please check your internet connection.';
                 break;
         }
         
@@ -165,6 +229,7 @@ async function handleLogin(e) {
  */
 async function handleSignup(e) {
     e.preventDefault();
+    console.log('Signup form submitted');
     
     const username = document.getElementById('signupUsername').value.trim();
     const email = document.getElementById('signupEmail').value.trim();
@@ -200,17 +265,20 @@ async function handleSignup(e) {
 
     try {
         showLoading();
+        console.log('Creating user account for:', email);
         
         // Create user with Firebase Auth
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
+
+        console.log('User account created successfully:', user.email);
 
         // Update user profile
         await user.updateProfile({
             displayName: username
         });
 
-        // Save additional user data to Firestore
+        // Prepare user data for Firestore
         const userData = {
             uid: user.uid,
             username: username,
@@ -219,7 +287,14 @@ async function handleSignup(e) {
             profileComplete: false
         };
 
-        await db.collection(COLLECTIONS.USERS).doc(user.uid).set(userData);
+        // Try to save to Firestore
+        try {
+            await db.collection(COLLECTIONS.USERS).doc(user.uid).set(userData);
+            console.log('User data saved to Firestore');
+        } catch (firestoreError) {
+            console.warn('Could not save to Firestore:', firestoreError);
+            // Continue anyway - the auth account was created successfully
+        }
 
         // Save to localStorage
         saveCurrentUser({
@@ -232,8 +307,9 @@ async function handleSignup(e) {
 
         showMessage('Account created successfully! Redirecting...', 'success');
         
-        // Redirect to landing page
+        // Redirect to landing page after a short delay
         setTimeout(() => {
+            console.log('Redirecting to landing page...');
             window.location.href = 'landing.html';
         }, 1500);
 
@@ -252,6 +328,9 @@ async function handleSignup(e) {
             case 'auth/weak-password':
                 errorMessage = 'Password is too weak. Please choose a stronger password.';
                 break;
+            case 'auth/network-request-failed':
+                errorMessage = 'Network error. Please check your internet connection.';
+                break;
         }
         
         showMessage(errorMessage, 'error');
@@ -266,7 +345,12 @@ async function handleSignup(e) {
 function initPasswordStrength() {
     const passwordInput = document.getElementById('signupPassword');
     
-    if (!passwordInput) return;
+    if (!passwordInput) {
+        console.log('Password input not found, skipping strength checker');
+        return;
+    }
+
+    console.log('Initializing password strength checker');
 
     // Create password strength indicator
     const strengthContainer = document.createElement('div');
@@ -316,10 +400,17 @@ function initPasswordStrength() {
 async function signOut() {
     try {
         showLoading();
+        console.log('Signing out user...');
+        
         await auth.signOut();
         removeCurrentUser();
+        
         showMessage('Logged out successfully', 'success');
-        window.location.href = 'index.html';
+        
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1000);
+        
     } catch (error) {
         console.error('Signout error:', error);
         showMessage('Error logging out', 'error');
@@ -330,3 +421,6 @@ async function signOut() {
 
 // Make signOut function globally available
 window.signOut = signOut;
+
+// Debug logging
+console.log('Authentication script loaded successfully');
