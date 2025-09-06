@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoFinds - Shopping Cart</title>
+    <link rel="stylesheet" href="landing.css">
+    <style>
+        /* Additional Cart Page Styles */
+        .cart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fafafa;
+            min-height: 100vh;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .cart-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        .continue-shopping {
+            background: none;
+            border: 2px solid #2e7d32;
+            color: #2e7d32;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .continue-shopping:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .cart-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .cart-items {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 80px 1fr auto auto;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .item-category {
+            font-size: 14px;
+            color: #2e7d32;
+            background: #e8f5e8;
+            padding: 4px 12px;
+            border-radius: 12px;
+            align-self: flex-start;
+        }
+
+        .item-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1b5e20;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 8px;
+        }
+
+        .qty-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .qty-btn:hover {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .qty-display {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .remove-item:hover {
+            background: #fff5f5;
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2e7d32;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #e0e0e0;
+            padding-top: 16px;
+            margin-top: 16px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #1b5e20;
+        }
+
+        .checkout-button {
+            width: 100%;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-button:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-cart-icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+        }
+
+        .empty-cart h2 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #495057;
+        }
+
+        .empty-cart p {
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        .shop-now-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .shop-now-btn:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .cart-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .cart-item {
+                grid-template-columns: 60px 1fr;
+                gap: 15px;
+            }
+
+            .quantity-control {
+                grid-column: 1 / -1;
+                justify-self: start;
+                margin-top: 12px;
+            }
+
+            .remove-item {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+            }
+
+            .cart-item {
+                position: relative;
+                padding-right: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <a href="landing.html" class="logo">EcoFinds</a>
+            <div class="header-icons">
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Shopping Cart">
+                    🛒
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </button>
+                <button class="icon-btn" onclick="toggleProfile()" title="Profile">
+                    👤
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cart Container -->
+    <div class="cart-container">
+        <div class="cart-header">
+            <h1 class="cart-title">Your Shopping Cart</h1>
+            <a href="landing.html" class="continue-shopping">
+                ← Continue Shopping
+            </a>
+        </div>
+
+        <div id="cartContent">
+            <!-- Cart items will be populated here -->
+        </div>
+    </div>
+
+    <!-- Side Menu -->
+    <div class="menu-overlay" onclick="toggleMenu()"></div>
+    <nav class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <div class="menu-title">EcoFinds</div>
+            <div class="menu-subtitle">Sustainable Shopping</div>
+        </div>
+        <div class="menu-items">
+            <a href="landing.html" class="menu-item">
+                <span class="menu-item-icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="cart.html" class="menu-item">
+                <span class="menu-item-icon">🛒</span>
+                <span>Cart</span>
+            </a>
+            <a href="wishlist.html" class="menu-item">
+                <span class="menu-item-icon">❤️</span>
+                <span>Wishlist</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-item-icon">📦</span>
+                <span>My Orders</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // Get cart data from localStorage
+        function getCart() {
+            return JSON.parse(localStorage.getItem('ecofinds_cart') || '[]');
+        }
+
+        // Save cart to localStorage
+        function saveCart(cart) {
+            localStorage.setItem('ecofinds_cart', JSON.stringify(cart));
+        }
+
+        // Update cart badge
+        function updateCartBadge() {
+            const cart = getCart();
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartBadge').textContent = totalItems;
+        }
+
+        // Render cart items
+        function renderCart() {
+            const cart = getCart();
+            const cartContent = document.getElementById('cartContent');
+
+            if (cart.length === 0) {
+                cartContent.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <h2>Your cart is empty</h2>
+                        <p>Looks like you haven't added any eco-friendly products yet.</p>
+                        <a href="landing.html" class="shop-now-btn">Start Shopping</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = subtotal > 2000 ? 0 : 99;
+            const total = subtotal + shipping;
+
+            cartContent.innerHTML = `
+                <div class="cart-content">
+                    <div class="cart-items">
+                        ${cart.map(item => `
+                            <div class="cart-item">
+                                <div class="item-image">${item.image}</div>
+                                <div class="item-info">
+                                    <div class="item-title">${item.title}</div>
+                                    <div class="item-category">${item.category}</div>
+                                    <div class="item-price">₹${item.price.toLocaleString()}</div>
+                                </div>
+                                <div class="quantity-control">
+                                    <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                                    <span class="qty-display">${item.quantity}</span>
+                                    <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                                </div>
+                                <button class="remove-item" onclick="removeItem(${item.id})">🗑️</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="cart-summary">
+                        <h3 class="summary-title">Order Summary</h3>
+                        <div class="summary-row">
+                            <span>Subtotal (${cart.length} items)</span>
+                            <span>₹${subtotal.toLocaleString()}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span>${shipping === 0 ? 'FREE' : '₹' + shipping}</span>
+                        </div>
+                        ${shipping === 0 ? '' : '<div class="summary-row"><small style="color: #666;">Free shipping on orders above ₹2000</small></div>'}
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span>₹${total.toLocaleString()}</span>
+                        </div>
+                        <button class="checkout-button" onclick="checkout()">
+                            Proceed to Checkout
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update quantity
+        function updateQuantity(id, change) {
+            const cart = getCart();
+            const itemIndex = cart.findIndex(item => item.id === id);
+            
+            if (itemIndex !== -1) {
+                cart[itemIndex].quantity += change;
+                
+                if (cart[itemIndex].quantity <= 0) {
+                    cart.splice(itemIndex, 1);
+                }
+                
+                saveCart(cart);
+                renderCart();
+                updateCartBadge();
+            }
+        }
+
+        // Remove item
+        function removeItem(id) {
+            const cart = getCart();
+            const updatedCart = cart.filter(item => item.id !== id);
+            saveCart(updatedCart);
+            renderCart();
+            updateCartBadge();
+            
+            // Show notification
+            showNotification('Item removed from cart', 'info');
+        }
+
+        // Checkout function
+        function checkout() {
+            const cart = getCart();
+            if (cart.length === 0) return;
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Clear cart
+            saveCart([]);
+            
+            // Show success message
+            alert(`🎉 Order placed successfully!\nTotal: ₹${total.toLocaleString()}\n\nThank you for choosing sustainable products!`);
+            
+            // Redirect to landing page
+            window.location.href = 'landing.html';
+        }
+
+        // Menu toggle
+        function toggleMenu() {
+            const sideMenu = document.getElementById('sideMenu');
+            const overlay = document.querySelector('.menu-overlay');
+            
+            sideMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'info' ? '#2196f3' : '#4caf50'};
+                color: white;
+                padding: 16px 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                z-index: 1000;
+                font-weight: 500;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCart();
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>

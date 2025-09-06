@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoFinds - Sustainable Marketplace</title>
+    <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <a href="#" class="logo">EcoFinds</a>
+            <div class="header-icons">
+                <!-- User Greeting -->
+                <div class="user-greeting" id="userGreeting" style="display: none;">
+                    <span class="greeting-text">Hello, <span id="userName">User</span>!</span>
+                </div>
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Shopping Cart">
+                    🛒
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </button>
+                <button class="icon-btn" onclick="window.location.href='wishlist.html'" title="Wishlist">
+                    ❤
+                    <span class="cart-badge" id="wishlistBadge">0</span>
+                </button>
+                <button class="icon-btn" onclick="toggleProfile()" title="Profile">
+                    👤
+                </button>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search sustainable products...">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn" onclick="showSortOptions()">Sort</button>
+            <button class="action-btn" onclick="showFilters()">Filter</button>
+            <button class="action-btn" onclick="clearFilters()">Clear</button>
+        </div>
+    </header>
+
+    <!-- Banner -->
+    <section class="banner">
+        <h2 id="bannerTitle">Discover Sustainable Living</h2>
+        <p id="bannerSubtitle">Find eco-friendly products that make a difference for you and the planet</p>
+        <a href="#" class="banner-btn">Explore Now</a>
+    </section>
+
+    <!-- Seller Call-to-Action Section -->
+    <section class="seller-cta-section">
+        <div class="seller-cta-container">
+            <div class="seller-cta-content">
+                <span class="seller-icon">🌱</span>
+                <span class="seller-text">Want to sell sustainable products? Join our eco-friendly marketplace!</span>
+            </div>
+            <button class="manage-listings-btn" onclick="openDashboard()">
+                <span class="box-icon">📦</span>
+                <span>Manage My Listings</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories-section">
+        <button class="categories-btn" onclick="showAllCategories()">
+            🌱 View All Categories
+        </button>
+    </section>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar" id="filterBar" style="display: none;">
+        <div class="active-filters">
+            <span class="filter-label">Active Filters:</span>
+            <div id="activeFilters"></div>
+        </div>
+    </div>
+
+    <!-- Sort Options -->
+    <div class="sort-dropdown" id="sortDropdown" style="display: none;">
+        <div class="sort-option" onclick="sortProducts('price-low')">Price: Low to High</div>
+        <div class="sort-option" onclick="sortProducts('price-high')">Price: High to Low</div>
+        <div class="sort-option" onclick="sortProducts('name')">Name A-Z</div>
+        <div class="sort-option" onclick="sortProducts('rating')">Highest Rated</div>
+        <div class="sort-option" onclick="sortProducts('newest')">Newest First</div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div class="filter-panel" id="filterPanel" style="display: none;">
+        <h3>Filter Products</h3>
+        <div class="filter-section">
+            <h4>Category</h4>
+            <div class="filter-options">
+                <label><input type="checkbox" value="Electronics" onchange="applyFilters()"> Electronics</label>
+                <label><input type="checkbox" value="Clothing" onchange="applyFilters()"> Clothing</label>
+                <label><input type="checkbox" value="Home & Garden" onchange="applyFilters()"> Home & Garden</label>
+                <label><input type="checkbox" value="Books" onchange="applyFilters()"> Books</label>
+                <label><input type="checkbox" value="Sports" onchange="applyFilters()"> Sports</label>
+            </div>
+        </div>
+        <div class="filter-section">
+            <h4>Price Range</h4>
+            <div class="filter-options">
+                <label><input type="checkbox" value="0-1000" onchange="applyFilters()"> Under ₹1,000</label>
+                <label><input type="checkbox" value="1000-2500" onchange="applyFilters()"> ₹1,000 - ₹2,500</label>
+                <label><input type="checkbox" value="2500-5000" onchange="applyFilters()"> ₹2,500 - ₹5,000</label>
+                <label><input type="checkbox" value="5000+" onchange="applyFilters()"> Above ₹5,000</label>
+            </div>
+        </div>
+        <div class="filter-section">
+            <h4>Rating</h4>
+            <div class="filter-options">
+                <label><input type="checkbox" value="4+" onchange="applyFilters()"> 4+ Stars</label>
+                <label><input type="checkbox" value="3+" onchange="applyFilters()"> 3+ Stars</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products -->
+    <section class="products-section">
+        <h2 class="section-title">Featured Products</h2>
+        <div class="products-grid" id="productsGrid"></div>
+    </section>
+
+    <!-- Product Detail Modal -->
+    <div class="modal-overlay" id="productModal" onclick="closeProductModal()">
+        <div class="product-modal" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeProductModal()">×</button>
+            <div class="modal-content" id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Profile Dropdown -->
+    <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+        <div class="profile-header">
+            <div class="profile-avatar">👤</div>
+            <div class="profile-info">
+                <div class="profile-name" id="profileName">User</div>
+                <div class="profile-email" id="profileEmail">user@example.com</div>
+            </div>
+        </div>
+        <div class="profile-menu">
+            <a href="#" class="profile-menu-item">
+                <span>👤</span>
+                <span>My Profile</span>
+            </a>
+            <a href="#" class="profile-menu-item">
+                <span>📦</span>
+                <span>My Orders</span>
+            </a>
+            <a href="wishlist.html" class="profile-menu-item">
+                <span>❤</span>
+                <span>Wishlist</span>
+            </a>
+            <a href="cart.html" class="profile-menu-item">
+                <span>🛒</span>
+                <span>Cart</span>
+            </a>
+            <a href="#" class="profile-menu-item">
+                <span>⚙</span>
+                <span>Settings</span>
+            </a>
+            <div class="profile-menu-divider"></div>
+            <a href="#" class="profile-menu-item" onclick="signOut()">
+                <span>🚪</span>
+                <span>Sign Out</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>©️ 2024 EcoFinds - Your Sustainable Marketplace</p>
+    </footer>
+
+    <!-- Side Menu -->
+    <div class="menu-overlay" onclick="toggleMenu()"></div>
+    <nav class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <div class="menu-title">EcoFinds</div>
+            <div class="menu-subtitle">Sustainable Shopping</div>
+            <div class="menu-user-info" id="menuUserInfo" style="display: none;">
+                <div class="menu-user-avatar">👤</div>
+                <div class="menu-user-details">
+                    <div class="menu-user-name" id="menuUserName">User</div>
+                    <div class="menu-user-email" id="menuUserEmail">user@example.com</div>
+                </div>
+            </div>
+        </div>
+        <div class="menu-items">
+            <a href="landing.html" class="menu-item">
+                <span class="menu-item-icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-item-icon">🛍</span>
+                <span>Shop</span>
+            </a>
+            <a href="wishlist.html" class="menu-item">
+                <span class="menu-item-icon">❤</span>
+                <span>Wishlist</span>
+            </a>
+            <a href="cart.html" class="menu-item">
+                <span class="menu-item-icon">🛒</span>
+                <span>Cart</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-item-icon">📦</span>
+                <span>My Orders</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-item-icon">👤</span>
+                <span>Profile</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-item-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-item-icon">📞</span>
+                <span>Support</span>
+            </a>
+            <a href="#" class="menu-item" onclick="signOut()">
+                <span class="menu-item-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Please wait...</p>
+    </div>
+
+    <!-- Error/Success Messages -->
+    <div id="messageContainer" class="message-container hidden">
+        <div class="message" id="messageContent"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="landing.js"></script>
+
+    <script>
+        // Initialize page with user authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication and display user info
+            checkAuthenticationAndDisplayUser();
+        });
+
+        // Function to check authentication and display user information
+        function checkAuthenticationAndDisplayUser() {
+            // First check localStorage for user data
+            const currentUser = getCurrentUser();
+            
+            if (currentUser) {
+                displayUserInfo(currentUser);
+                personalizeExperience(currentUser);
+            }
+        }
+
+        // Function to display user information in the UI
+        function displayUserInfo(user) {
+            if (!user) return;
+
+            const displayName = user.displayName || user.username || 'User';
+            const email = user.email || '';
+
+            // Update header greeting
+            const userGreeting = document.getElementById('userGreeting');
+            const userName = document.getElementById('userName');
+            if (userGreeting && userName) {
+                userName.textContent = displayName;
+                userGreeting.style.display = 'block';
+            }
+
+            // Update profile dropdown
+            const profileName = document.getElementById('profileName');
+            const profileEmail = document.getElementById('profileEmail');
+            if (profileName) profileName.textContent = displayName;
+            if (profileEmail) profileEmail.textContent = email;
+
+            // Update side menu user info
+            const menuUserInfo = document.getElementById('menuUserInfo');
+            const menuUserName = document.getElementById('menuUserName');
+            const menuUserEmail = document.getElementById('menuUserEmail');
+            if (menuUserInfo) {
+                menuUserInfo.style.display = 'block';
+                if (menuUserName) menuUserName.textContent = displayName;
+                if (menuUserEmail) menuUserEmail.textContent = email;
+            }
+        }
+
+        // Function to personalize the experience based on user
+        function personalizeExperience(user) {
+            const displayName = user.displayName || user.username || 'User';
+            
+            // Personalize banner
+            const bannerTitle = document.getElementById('bannerTitle');
+            const bannerSubtitle = document.getElementById('bannerSubtitle');
+            
+            if (bannerTitle && bannerSubtitle) {
+                bannerTitle.textContent = `Welcome back, ${displayName}!`;
+                bannerSubtitle.textContent = 'Continue discovering sustainable products that make a difference for you and the planet';
+            }
+        }
+
+        // Function to get current user from localStorage (fallback implementation)
+        function getCurrentUser() {
+            try {
+                return JSON.parse(localStorage.getItem('ecofinds_user'));
+            } catch {
+                return null;
+            }
+        }
+
+        // Function to open dashboard
+        function openDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Function to toggle profile dropdown
+        function toggleProfile() {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        // Close profile dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const profileBtn = event.target.closest('.icon-btn');
+            const dropdown = document.getElementById('profileDropdown');
+            
+            if (!profileBtn && dropdown && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Sign out function
+        function signOut() {
+            // Clear any stored user data
+            localStorage.removeItem('ecofinds_user');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <style>
+        /* User Greeting Styles */
+        .user-greeting {
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .greeting-text {
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        /* Profile Dropdown Styles */
+        .profile-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            min-width: 280px;
+            z-index: 1000;
+            border: 1px solid #e0e0e0;
+        }
+
+        .profile-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .profile-menu {
+            padding: 10px 0;
+        }
+
+        .profile-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .profile-menu-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .profile-menu-divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 8px 0;
+        }
+
+        /* Side Menu User Info Styles */
+        .menu-user-info {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .menu-user-details {
+            flex: 1;
+        }
+
+        .menu-user-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .menu-user-email {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+        }
+
+        .loading-overlay.hidden {
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #4caf50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Message Container Styles */
+        .message-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9998;
+            max-width: 400px;
+        }
+
+        .message-container.hidden {
+            display: none;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Seller Call-to-Action Section Styles */
+        .seller-cta-section {
+            background: linear-gradient(135deg, #e8f5e8, #f0f9f0);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 15px;
+            border: 2px solid #d4e6d4;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .seller-cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(76, 175, 80, 0.1) 0%, rgba(139, 195, 74, 0.1) 100%);
+            z-index: 0;
+        }
+
+        .seller-cta-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .seller-cta-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .seller-icon {
+            font-size: 24px;
+            animation: pulse 2s infinite;
+        }
+
+        .seller-text {
+            font-size: 16px;
+            color: #2e7d32;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .manage-listings-btn {
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .manage-listings-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .manage-listings-btn:hover::before {
+            left: 100%;
+        }
+
+        .manage-listings-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, #45a049, #388e3c);
+        }
+
+        .manage-listings-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .box-icon {
+            font-size: 18px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-3px);
+            }
+            60% {
+                transform: translateY(-2px);
+            }
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .seller-cta-container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .seller-cta-section {
+                padding: 25px 30px;
+            }
+
+            .seller-text {
+                font-size: 18px;
+            }
+
+            .manage-listings-btn {
+                font-size: 17px;
+                padding: 14px 28px;
+            }
+
+            .user-greeting {
+                margin-right: 20px;
+            }
+
+            .greeting-text {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .seller-cta-section {
+                margin: 15px 10px;
+                padding: 18px;
+            }
+
+            .manage-listings-btn {
+                align-self: stretch;
+                justify-content: center;
+            }
+
+            .profile-dropdown {
+                right: 10px;
+                min-width: 260px;
+            }
+
+            .user-greeting {
+                margin-right: 10px;
+            }
+
+            .greeting-text {
+                font-size: 12px;
+            }
+        }
+
+        /* Header responsiveness for user greeting */
+        @media (max-width: 480px) {
+            .user-greeting {
+                display: none;
+            }
+        }
+    </style>
+</body>
+</html>

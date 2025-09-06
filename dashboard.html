@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoFinds - My Listings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #fafafa;
+            color: #333333;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .hamburger {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 2px;
+            background: #2e7d32;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2e7d32;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            position: relative;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .icon-btn:hover {
+            background: #e8f5e8;
+            border-color: #2e7d32;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ff5722;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(255, 87, 34, 0.3);
+        }
+
+        /* Page Title Section */
+        .page-title-section {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-radius: 20px;
+            padding: 32px 24px;
+            margin: 24px 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(46, 125, 50, 0.1);
+        }
+
+        .page-title-section::after {
+            content: '📦';
+            position: absolute;
+            top: 16px;
+            right: 24px;
+            font-size: 32px;
+            opacity: 0.7;
+        }
+
+        .page-title {
+            font-size: 28px;
+            color: #1b5e20;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: #2e7d32;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .add-btn {
+            background: #2e7d32;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-btn:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+        }
+
+        /* Search and Controls */
+        .controls-section {
+            padding: 0 20px;
+            margin-bottom: 24px;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 16px;
+            padding: 14px 16px 14px 48px;
+            color: #333;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2e7d32;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #6c757d;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 18px;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #ffffff;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+        }
+
+        .filter-btn select {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-size: inherit;
+            cursor: pointer;
+        }
+
+        /* Products Grid */
+        .products-section {
+            padding: 0 20px;
+            margin-bottom: 32px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .product-card {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            border-color: #2e7d32;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-image-placeholder {
+            font-size: 48px;
+            opacity: 0.6;
+        }
+
+        .product-actions-overlay {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .product-card:hover .product-actions-overlay {
+            opacity: 1;
+        }
+
+        .action-btn-small {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn-small:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #212529;
+            line-height: 1.4;
+        }
+
+        .product-category {
+            color: #2e7d32;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            background: #e8f5e8;
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .product-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1b5e20;
+            margin-bottom: 8px;
+        }
+
+        .product-meta {
+            font-size: 12px;
+            color: #6c757d;
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .add-to-cart-btn {
+            flex: 1;
+            background: #2e7d32;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #1b5e20;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .add-to-cart-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Add Product Form */
+        .form-container {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 0 20px 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #1b5e20;
+        }
+
+        .image-upload {
+            border: 2px dashed #c8e6c9;
+            border-radius: 12px;
+            padding: 32px 20px;
+            text-align: center;
+            margin-bottom: 24px;
+            cursor: pointer;
+            position: relative;
+            background: #f8fffe;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload:hover {
+            border-color: #2e7d32;
+            background: #f1f8e9;
+        }
+
+        .image-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .image-upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .image-upload-icon {
+            font-size: 32px;
+            color: #2e7d32;
+        }
+
+        .image-upload-text {
+            color: #2e7d32;
+            font-weight: 500;
+        }
+
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #333;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #2e7d32;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2e7d32;
+        }
+
+        .checkbox-group label {
+            color: #495057;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 24px;
+        }
+
+        .submit-btn:hover {
+            background: #1b5e20;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .back-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            color: #495057;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 20px 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #495057;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Navigation Link */
+        .nav-link {
+            background: #e8f5e8;
+            border: 1px solid #c8e6c9;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 20px 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #2e7d32;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #c8e6c9;
+            transform: translateY(-1px);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .page-title-section {
+                margin: 32px 20px;
+                padding: 40px 32px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-card {
+            animation: slideInUp 0.4s ease forwards;
+        }
+
+        .product-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .product-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Listings Page -->
+        <div id="listingsPage">
+            <div class="header">
+                <div class="header-top">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <a href="#" class="logo">EcoFinds</a>
+                    <div class="header-icons">
+                        <button class="icon-btn" onclick="viewCart()" title="Shopping Cart">
+                            🛒
+                            <span class="cart-badge" id="cartBadge">0</span>
+                        </button>
+                        <button class="icon-btn" title="Profile">
+                            👤
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Link to Landing Page -->
+            <a href="#" class="nav-link" onclick="goToLandingPage()">
+                ← Back to EcoFinds Marketplace
+            </a>
+
+            <div class="page-title-section">
+                <h1 class="page-title">My Listings</h1>
+                <p class="page-subtitle">Manage your sustainable product listings</p>
+                <button class="add-btn" onclick="showAddPage()">
+                    + Add New Product
+                </button>
+            </div>
+
+            <div class="controls-section">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search your listings..." id="searchInput" oninput="filterProducts()">
+                    <span class="search-icon">🔍</span>
+                </div>
+
+                <div class="filter-controls">
+                    <button class="filter-btn" onclick="sortProducts()">Sort A-Z</button>
+                    <div class="filter-btn">
+                        <select id="categoryFilter" onchange="filterProducts()">
+                            <option value="">All Categories</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Books">Books</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Home & Garden">Home & Garden</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <button class="filter-btn" onclick="clearFilters()">Clear Filters</button>
+                </div>
+            </div>
+
+            <div class="products-section">
+                <div class="products-grid" id="productsContainer">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🌱</div>
+                        <h3>Start Your Sustainable Business</h3>
+                        <p>No products listed yet. Click "Add New Product" to create your first eco-friendly listing and start making a difference!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Product Page -->
+        <div id="addProductPage" class="hidden">
+            <div class="header">
+                <div class="header-top">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <a href="#" class="logo">EcoFinds</a>
+                    <div class="header-icons">
+                        <button class="icon-btn" onclick="viewCart()">
+                            🛒
+                            <span class="cart-badge">0</span>
+                        </button>
+                        <button class="icon-btn">
+                            👤
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="back-btn" onclick="showListingsPage()">
+                ← Back to My Listings
+            </button>
+
+            <div class="form-container">
+                <h2 class="form-title">Add Sustainable Product</h2>
+                
+                <form id="productForm" onsubmit="submitProduct(event)">
+                    <div class="image-upload" onclick="document.getElementById('imageInput').click()">
+                        <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+                        <div class="image-upload-content" id="imageUploadContent">
+                            <div class="image-upload-icon">📸</div>
+                            <div class="image-upload-text">Add Product Image</div>
+                            <small>Click to upload or drag and drop</small>
+                        </div>
+                        <img id="imagePreview" class="image-preview hidden" alt="Preview">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Product Title *</label>
+                        <input type="text" class="form-input" name="title" required placeholder="e.g., Organic Cotton T-Shirt">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Product Category *</label>
+                        <select class="form-select" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Books">Books</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Home & Garden">Home & Garden</option>
+                            <option value="Automotive">Automotive</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Product Description *</label>
+                        <textarea class="form-textarea" name="description" required placeholder="Describe your sustainable product, its materials, and environmental benefits..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Price (₹) *</label>
+                        <input type="number" class="form-input" name="price" step="0.01" required placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Quantity Available *</label>
+                        <input type="number" class="form-input" name="quantity" min="1" required placeholder="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Condition *</label>
+                        <select class="form-select" name="condition" required>
+                            <option value="">Select Condition</option>
+                            <option value="New">New</option>
+                            <option value="Like New">Like New</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                            <option value="Poor">Poor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Brand</label>
+                        <input type="text" class="form-input" name="brand" placeholder="Brand name (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Model</label>
+                        <input type="text" class="form-input" name="model" placeholder="Model name (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Material</label>
+                        <input type="text" class="form-input" name="material" placeholder="e.g., Organic Cotton, Bamboo, Recycled Plastic">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Color</label>
+                        <input type="text" class="form-input" name="color" placeholder="Product color">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="originalPackaging" name="originalPackaging">
+                            <label for="originalPackaging">Original Packaging Included</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="manualIncluded" name="manualIncluded">
+                            <label for="manualIncluded">Manual/Instructions Included</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Sustainability Features</label>
+                        <textarea class="form-textarea" name="sustainabilityFeatures" placeholder="Describe eco-friendly aspects: recyclable materials, carbon neutral, locally sourced, etc."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Add Product to Listings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let cart = [];
+        let currentImageData = null;
+        let filteredProducts = [];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartBadge();
+            renderProducts();
+        });
+
+        function showAddPage() {
+            document.getElementById('listingsPage').classList.add('hidden');
+            document.getElementById('addProductPage').classList.remove('hidden');
+        }
+
+        function showListingsPage() {
+            document.getElementById('addProductPage').classList.add('hidden');
+            document.getElementById('listingsPage').classList.remove('hidden');
+        }
+
+        function goToLandingPage() {
+            showNotification('🌱 Returning to EcoFinds Marketplace...', 'success');
+            setTimeout(() => {
+                alert('This would navigate to the main marketplace where customers can discover and purchase your sustainable products!');
+            }, 1000);
+        }
+
+        function viewCart() {
+            showNotification(`🛒 Cart has ${cart.length} items`, 'success');
+            if (cart.length > 0) {
+                const cartSummary = cart.map(item => `${item.title} - ₹${item.price} (Qty: ${item.cartQuantity || 1})`).join('\n');
+                const totalValue = cart.reduce((sum, item) => sum + (item.price * (item.cartQuantity || 1)), 0);
+                alert(`Cart Contents:\n${cartSummary}\n\nTotal Value: ₹${totalValue.toFixed(2)}`);
+            } else {
+                alert('Your cart is empty. Add some eco-friendly products!');
+            }
+        }
+
+        function updateCartBadge() {
+            const badges = document.querySelectorAll('.cart-badge');
+            const totalQuantity = cart.reduce((sum, item) => sum + (item.cartQuantity || 1), 0);
+            badges.forEach(badge => {
+                badge.textContent = totalQuantity;
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            if (product.quantity <= 0) {
+                showNotification('Product out of stock!', 'error');
+                return;
+            }
+
+            // Check if product already in cart
+            const existingCartItem = cart.find(item => item.id === productId);
+            
+            if (existingCartItem) {
+                if (existingCartItem.cartQuantity < product.quantity) {
+                    existingCartItem.cartQuantity += 1;
+                    showNotification(`Added another ${product.title} to cart`, 'success');
+                } else {
+                    showNotification('Cannot add more - stock limit reached', 'error');
+                    return;
+                }
+            } else {
+                // Add new item to cart
+                const cartItem = {
+                    id: product.id,
+                    title: product.title,
+                    price: product.price,
+                    image: product.image,
+                    category: product.category,
+                    seller: product.seller,
+                    cartQuantity: 1,
+                    maxQuantity: product.quantity
+                };
+                cart.push(cartItem);
+                showNotification(`${product.title} added to cart`, 'success');
+            }
+
+            updateCartBadge();
+            renderProducts(); // Re-render to update button states
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Image size should be less than 5MB', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentImageData = e.target.result;
+                    const preview = document.getElementById('imagePreview');
+                    const uploadContent = document.getElementById('imageUploadContent');
+                    
+                    preview.src = currentImageData;
+                    preview.classList.remove('hidden');
+                    uploadContent.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function submitProduct(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const product = {
+                id: Date.now(),
+                title: formData.get('title'),
+                category: formData.get('category'),
+                description: formData.get('description'),
+                price: parseFloat(formData.get('price')),
+                quantity: parseInt(formData.get('quantity')),
+                condition: formData.get('condition'),
+                brand: formData.get('brand') || '',
+                model: formData.get('model') || '',
+                material: formData.get('material') || '',
+                color: formData.get('color') || '',
+                originalPackaging: formData.get('originalPackaging') === 'on',
+                manualIncluded: formData.get('manualIncluded') === 'on',
+                sustainabilityFeatures: formData.get('sustainabilityFeatures') || '',
+                image: currentImageData,
+                seller: 'You',
+                dateAdded: new Date().toLocaleDateString(),
+                rating: (4.5 + Math.random() * 0.5).toFixed(1),
+                reviews: Math.floor(Math.random() * 50) + 1
+            };
+
+            products.push(product);
+            
+            // Reset form
+            event.target.reset();
+            currentImageData = null;
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('imageUploadContent').style.display = 'flex';
+            
+            // Show success and return to listings
+            showNotification('✅ Product added successfully! You can now add it to your cart.', 'success');
+            showListingsPage();
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            const productsToShow = filteredProducts.length > 0 ? filteredProducts : products;
+            
+            if (productsToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🌱</div>
+                        <h3>Start Your Sustainable Business</h3>
+                        <p>No products listed yet. Click "Add New Product" to create your first eco-friendly listing and start making a difference!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = productsToShow.map(product => {
+                // Check if product is in cart and get cart quantity
+                const cartItem = cart.find(item => item.id === product.id);
+                const inCartQuantity = cartItem ? cartItem.cartQuantity : 0;
+                const canAddToCart = inCartQuantity < product.quantity;
+                const isOutOfStock = product.quantity <= 0;
+                
+                return `
+                    <div class="product-card">
+                        <div class="product-image">
+                            ${product.image ? `<img src="${product.image}" alt="${product.title}">` : '<div class="product-image-placeholder">📦</div>'}
+                            <div class="product-actions-overlay">
+                                <button class="action-btn-small" onclick="editProduct(${product.id})" title="Edit">
+                                    ✏️
+                                </button>
+                                <button class="action-btn-small" onclick="deleteProduct(${product.id})" title="Delete">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">${product.category}</div>
+                            <div class="product-title">${product.title}</div>
+                            <div class="product-price">₹${product.price.toFixed(2)}</div>
+                            <div class="product-meta">
+                                Condition: ${product.condition}<br>
+                                Quantity: ${product.quantity} available<br>
+                                Added: ${product.dateAdded}<br>
+                                Rating: ⭐ ${product.rating} (${product.reviews} reviews)
+                                ${inCartQuantity > 0 ? `<br>🛒 ${inCartQuantity} in cart` : ''}
+                                ${product.sustainabilityFeatures ? `<br>🌱 ${product.sustainabilityFeatures.substring(0, 50)}${product.sustainabilityFeatures.length > 50 ? '...' : ''}` : ''}
+                            </div>
+                            <div class="product-actions">
+                                <button 
+                                    class="add-to-cart-btn" 
+                                    onclick="addToCart(${product.id})"
+                                    ${!canAddToCart || isOutOfStock ? 'disabled' : ''}
+                                >
+                                    🛒 ${isOutOfStock ? 'Out of Stock' : !canAddToCart ? 'Max Added' : 'Add to Cart'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            
+            filteredProducts = products.filter(product => {
+                const matchesSearch = !searchTerm || 
+                    product.title.toLowerCase().includes(searchTerm) || 
+                    product.description.toLowerCase().includes(searchTerm) ||
+                    product.category.toLowerCase().includes(searchTerm) ||
+                    (product.brand && product.brand.toLowerCase().includes(searchTerm));
+                    
+                const matchesCategory = !categoryFilter || product.category === categoryFilter;
+                
+                return matchesSearch && matchesCategory;
+            });
+
+            renderProducts();
+        }
+
+        function sortProducts() {
+            const productsToSort = filteredProducts.length > 0 ? filteredProducts : products;
+            productsToSort.sort((a, b) => a.title.localeCompare(b.title));
+            renderProducts();
+            showNotification('Products sorted alphabetically', 'success');
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            filteredProducts = [];
+            renderProducts();
+            showNotification('Filters cleared', 'success');
+        }
+
+        function editProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                // In a real app, this would open an edit form
+                const newTitle = prompt('Edit product title:', product.title);
+                if (newTitle && newTitle.trim()) {
+                    product.title = newTitle.trim();
+                    
+                    // Update cart item title if it exists
+                    const cartItem = cart.find(item => item.id === productId);
+                    if (cartItem) {
+                        cartItem.title = newTitle.trim();
+                    }
+                    
+                    renderProducts();
+                    showNotification('Product updated successfully', 'success');
+                }
+            }
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                const productIndex = products.findIndex(p => p.id === productId);
+                if (productIndex !== -1) {
+                    const deletedProduct = products[productIndex];
+                    products.splice(productIndex, 1);
+                    
+                    // Remove from cart if present
+                    const cartIndex = cart.findIndex(item => item.id === productId);
+                    if (cartIndex !== -1) {
+                        cart.splice(cartIndex, 1);
+                        updateCartBadge();
+                    }
+                    
+                    // Update filtered products
+                    filteredProducts = filteredProducts.filter(p => p.id !== productId);
+                    
+                    renderProducts();
+                    showNotification(`"${deletedProduct.title}" deleted successfully`, 'success');
+                }
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            // Remove existing notification
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create new notification
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add some sample products for demonstration
+        function addSampleProducts() {
+            const sampleProducts = [
+                {
+                    id: 1,
+                    title: "Organic Cotton Tote Bag",
+                    category: "Clothing",
+                    description: "100% organic cotton tote bag, perfect for grocery shopping and daily use.",
+                    price: 299,
+                    quantity: 50,
+                    condition: "New",
+                    brand: "EcoLife",
+                    model: "",
+                    material: "Organic Cotton",
+                    color: "Natural",
+                    originalPackaging: true,
+                    manualIncluded: false,
+                    sustainabilityFeatures: "Made from GOTS certified organic cotton, biodegradable",
+                    image: null,
+                    seller: 'You',
+                    dateAdded: new Date().toLocaleDateString(),
+                    rating: "4.7",
+                    reviews: 23
+                },
+                {
+                    id: 2,
+                    title: "Bamboo Water Bottle",
+                    category: "Home & Garden",
+                    description: "Eco-friendly water bottle made from sustainable bamboo fiber.",
+                    price: 599,
+                    quantity: 25,
+                    condition: "New",
+                    brand: "BambooCare",
+                    model: "BC-500",
+                    material: "Bamboo Fiber",
+                    color: "Brown",
+                    originalPackaging: true,
+                    manualIncluded: true,
+                    sustainabilityFeatures: "100% biodegradable, BPA-free, carbon neutral production",
+                    image: null,
+                    seller: 'You',
+                    dateAdded: new Date().toLocaleDateString(),
+                    rating: "4.5",
+                    reviews: 15
+                }
+            ];
+            
+            products.push(...sampleProducts);
+            renderProducts();
+        }
+
+        // Uncomment the line below to add sample products for testing
+        // addSampleProducts();
+    </script>
+</body>
+</html>
